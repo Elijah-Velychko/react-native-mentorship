@@ -3,44 +3,24 @@ import { SafeAreaView, Text, View, FlatList, Button } from 'react-native';
 
 import database from '@react-native-firebase/database';
 
-// database()
-//   .ref('/users')
-//   .set([
-//     {
-//       name: 'Peter',
-//       surname: 'Lop',
-//       id: '22ii',
-//     },
-//     {
-//       name: 'Jake',
-//       surname: 'Vivivk',
-//       id: '11ii',
-//     },
-//   ])
-//   .then(() => console.log('Data set.'));
+const dbUserRef = database().ref('/users');
 
-const addUser = ({ name, surname, id }) => {
-  database().ref('/users').push({
-    name,
-    surname,
-    id,
-  });
+const addUser = ({ name, surname, id, users }) => {
+  dbUserRef.set([...users, { name, surname, id }]);
 };
 
 const App = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    const userDBRef = database().ref('/users');
-
-    const OnLoadingListener = userDBRef.on('value', snapshot => {
+    const OnLoadingListener = dbUserRef.on('value', snapshot => {
       setUsers([]);
 
-      setUsers(prevState => snapshot.val());
+      setUsers(snapshot.val());
     });
 
     return () => {
-      userDBRef.off('value', OnLoadingListener);
+      dbUserRef.off('value', OnLoadingListener);
     };
   }, []);
 
@@ -79,7 +59,7 @@ const App = () => {
         <Button
           title="Add New User"
           onPress={() =>
-            addUser({ name: 'Jake', surname: 'Ivanov', id: 'ii66' })
+            addUser({ name: 'Elijah', surname: 'Wood', id: 'ii99', users })
           }
         />
       </View>
